@@ -40,3 +40,4 @@
 2024-06-25T18:12:12  fix(ci): handle empty and malformed input
 2024-07-21T13:29:19  docs(scan): add a JSON schema for output
 2024-07-30T08:46:26  perf(fixtures): add usage examples to help
+2024-08-25T15:03:33  test: trust, but verify
