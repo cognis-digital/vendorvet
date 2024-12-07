@@ -46,3 +46,4 @@
 2024-10-24T12:54:54  test(engine): stream large files without buffering
 2024-11-02T19:11:01  fix: works on my machine (TM)
 2024-11-28T14:28:08  build(docs): clarify the README quickstart
+2024-12-07T09:45:15  fix(scoring): extract the scorer
