@@ -48,3 +48,4 @@
 2024-11-28T14:28:08  build(docs): clarify the README quickstart
 2024-12-07T09:45:15  fix(scoring): extract the scorer
 2025-01-02T16:02:22  docs(cli): reduce false positives on edge cases
+2025-01-09T11:19:29  test: add edge case
