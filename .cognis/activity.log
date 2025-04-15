@@ -53,3 +53,4 @@
 2025-02-13T13:53:43  chore(rules): add color + severity icons
 2025-03-12T08:10:50  refactor(report): wire the MCP tool schema
 2025-04-07T15:27:57  test(ci): simplify the walker
+2025-04-15T10:44:04  test: it's not flaky, you're flaky
