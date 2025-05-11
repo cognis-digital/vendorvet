@@ -54,3 +54,4 @@
 2025-03-12T08:10:50  refactor(report): wire the MCP tool schema
 2025-04-07T15:27:57  test(ci): simplify the walker
 2025-04-15T10:44:04  test: it's not flaky, you're flaky
+2025-05-11T17:01:11  docs(output): extract the scorer
