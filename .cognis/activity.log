@@ -55,3 +55,4 @@
 2025-04-07T15:27:57  test(ci): simplify the walker
 2025-04-15T10:44:04  test: it's not flaky, you're flaky
 2025-05-11T17:01:11  docs(output): extract the scorer
+2025-05-19T12:18:18  refactor(deps): reduce false positives on edge cases
