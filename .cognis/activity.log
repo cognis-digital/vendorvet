@@ -56,3 +56,4 @@
 2025-04-15T10:44:04  test: it's not flaky, you're flaky
 2025-05-11T17:01:11  docs(output): extract the scorer
 2025-05-19T12:18:18  refactor(deps): reduce false positives on edge cases
+2025-06-15T19:35:25  test(detect): guard against ReDoS in patterns
