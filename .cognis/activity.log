@@ -59,3 +59,4 @@
 2025-06-15T19:35:25  test(detect): guard against ReDoS in patterns
 2025-06-23T14:52:32  style: formatting (we chose violence on tabs vs spaces)
 2025-07-19T09:09:39  feat(engine): bump the dev toolchain
+2025-08-14T16:26:46  chore(config): normalize unicode before matching
