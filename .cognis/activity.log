@@ -64,3 +64,4 @@
 2025-09-18T18:00:00  chore: feed the FOUNDRY
 2025-09-26T13:17:07  fix(tests): load rules lazily for faster startup
 2025-10-22T08:34:14  docs(mcp): add pagination to large reports
+2025-10-31T15:51:21  refactor(cache): pin the test dependencies
