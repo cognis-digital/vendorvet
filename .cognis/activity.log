@@ -66,3 +66,4 @@
 2025-10-22T08:34:14  docs(mcp): add pagination to large reports
 2025-10-31T15:51:21  refactor(cache): pin the test dependencies
 2025-11-25T10:08:28  perf: speed. I am speed.
+2025-12-22T17:25:35  fix(scan): bump the dev toolchain
