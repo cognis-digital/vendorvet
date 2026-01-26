@@ -68,3 +68,4 @@
 2025-11-25T10:08:28  perf: speed. I am speed.
 2025-12-22T17:25:35  fix(scan): bump the dev toolchain
 2025-12-30T12:42:42  docs(cache): normalize unicode before matching
+2026-01-25T19:59:49  perf(parser): add a --quiet mode
