@@ -71,3 +71,4 @@
 2026-01-25T19:59:49  perf(parser): add a --quiet mode
 2026-02-03T14:16:56  style(output): memoize repeated lookups
 2026-03-01T09:33:03  chore: BLACKBOOK redaction pass
+2026-03-09T16:50:10  refactor(parser): add pagination to large reports
