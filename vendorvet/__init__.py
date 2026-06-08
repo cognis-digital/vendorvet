@@ -1,29 +1,11 @@
-"""VENDORVET - Third-party / vendor risk management for SMBs.
-
-Scores vendor security questionnaires, cross-references SBOM components
-against a known-vulnerability feed, and emits an overall risk verdict.
-"""
-from .core import (
-    assess_questionnaire,
-    crossref_sbom,
-    assess_vendor,
-    RiskTier,
-    QuestionnaireResult,
-    SbomResult,
-    VendorAssessment,
-)
-
-TOOL_NAME = "vendorvet"
-TOOL_VERSION = "1.0.0"
-
-__all__ = [
-    "TOOL_NAME",
-    "TOOL_VERSION",
-    "assess_questionnaire",
-    "crossref_sbom",
-    "assess_vendor",
-    "RiskTier",
-    "QuestionnaireResult",
-    "SbomResult",
-    "VendorAssessment",
-]
+"""vendorvet — part of the Cognis Neural Suite."""
+try:  # re-export the tool's public API + identity from core
+    from vendorvet.core import *  # noqa: F401,F403
+except Exception:  # pragma: no cover
+    pass
+try:
+    from vendorvet.core import TOOL_NAME, TOOL_VERSION
+except Exception:  # pragma: no cover
+    TOOL_NAME = "vendorvet"
+    TOOL_VERSION = "0.1.0"
+__version__ = TOOL_VERSION
