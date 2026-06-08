@@ -36,9 +36,11 @@ TPRM for SMBs
 <a name="features"></a>
 ## Features
 
-- ✅ Todo
-- ✅ Fixme
-- ✅ Xxx
+- ✅ Assess Questionnaire
+- ✅ Crossref Sbom
+- ✅ Assess Vendor
+- ✅ To Dict
+- ✅ Load Json File
 - ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
 - ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
 
