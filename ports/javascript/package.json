@@ -1,0 +1,10 @@
+{
+  "name": "@cognis/vendorvet",
+  "version": "0.2.0",
+  "description": "JavaScript port of vendorvet (Cognis Neural Suite)",
+  "bin": {
+    "vendorvet": "index.js"
+  },
+  "license": "LicenseRef-COCL-1.0",
+  "type": "module"
+}
