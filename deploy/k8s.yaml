@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: vendorvet, labels: { app: vendorvet } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: vendorvet } }
+  template:
+    metadata: { labels: { app: vendorvet } }
+    spec:
+      containers:
+        - name: vendorvet
+          image: ghcr.io/cognis-digital/vendorvet:latest
+          ports: [{ containerPort: 8000 }]
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits: { cpu: "500m", memory: "256Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: vendorvet }
+spec:
+  selector: { app: vendorvet }
+  ports: [{ port: 80, targetPort: 8000 }]
