@@ -16,7 +16,7 @@
 </div>
 
 ```bash
-pip install cognis-vendorvet
+pip install "git+https://github.com/cognis-digital/vendorvet.git"
 vendorvet scan .            # → prioritized findings in seconds
 ```
 
@@ -50,7 +50,7 @@ TPRM for SMBs
 ## Quick start
 
 ```bash
-pip install cognis-vendorvet
+pip install "git+https://github.com/cognis-digital/vendorvet.git"
 vendorvet --version
 vendorvet scan .                       # scan current project
 vendorvet scan . --format json         # machine-readable
