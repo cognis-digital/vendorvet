@@ -20,6 +20,12 @@ pip install "git+https://github.com/cognis-digital/vendorvet.git"
 vendorvet scan .            # → prioritized findings in seconds
 ```
 
+<!-- cognis:layman:start -->
+## What is this?
+
+VendorVet helps you decide whether a third-party supplier or software vendor is safe to work with. You give it a completed security questionnaire (a short JSON file the vendor fills out) and it scores them on controls like encryption, multi-factor authentication, and breach history — then tells you to approve, approve with conditions, or reject. You can also point it at a bill-of-materials for any software you are evaluating, and it will flag known security vulnerabilities in the components. It is aimed at small and medium businesses that need to meet compliance requirements (SOC 2, GDPR, ISO 27001) without a dedicated security team or expensive enterprise software.
+<!-- cognis:layman:end -->
+
 ## Contents
 
 - [Why vendorvet?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
@@ -47,6 +53,42 @@ TPRM for SMBs
 <div align="right"><a href="#top">↑ back to top</a></div>
 
 <a name="quick-start"></a>
+<!-- cognis:install:start -->
+## Install
+
+`vendorvet` is source-available (not published to PyPI) — every method below installs
+straight from GitHub. Pick whichever you prefer; the one-line scripts auto-detect
+the best tool available on your machine.
+
+**One-liner (Linux / macOS):**
+```sh
+curl -fsSL https://raw.githubusercontent.com/cognis-digital/vendorvet/HEAD/install.sh | sh
+```
+
+**One-liner (Windows PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/cognis-digital/vendorvet/HEAD/install.ps1 | iex
+```
+
+**Or install manually — any one of:**
+```sh
+pipx install "git+https://github.com/cognis-digital/vendorvet.git"     # isolated (recommended)
+uv tool install "git+https://github.com/cognis-digital/vendorvet.git"  # uv
+pip install "git+https://github.com/cognis-digital/vendorvet.git"      # pip
+```
+
+**From source:**
+```sh
+git clone https://github.com/cognis-digital/vendorvet.git
+cd vendorvet && pip install .
+```
+
+Then run:
+```sh
+vendorvet --help
+```
+<!-- cognis:install:end -->
+
 ## Quick start
 
 ```bash
