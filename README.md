@@ -20,6 +20,39 @@ pip install cognis-vendorvet
 vendorvet scan .            # → prioritized findings in seconds
 ```
 
+## Usage — step by step
+
+1. **Install** (Python 3.9+):
+
+   ```bash
+   pip install vendorvet
+   ```
+
+2. **Score a security questionnaire.** Point `vendorvet questionnaire` at a vendor questionnaire JSON to get a residual risk score and tier:
+
+   ```bash
+   vendorvet questionnaire vendor_questionnaire.json
+   ```
+
+3. **Cross-reference an SBOM** against an advisory feed to find vulnerable components:
+
+   ```bash
+   vendorvet sbom vendor_sbom.json advisories.json
+   ```
+
+4. **Get a combined verdict** and read the output as JSON for tooling. `assess` merges the questionnaire with an optional SBOM:
+
+   ```bash
+   vendorvet --format json assess vendor_questionnaire.json --sbom vendor_sbom.json --advisories advisories.json | jq .tier
+   ```
+
+5. **Gate in CI.** The exit code is `0` for low/moderate risk, `2` for high/critical, and `1` on usage/IO errors — so a step fails the build when a vendor is high-risk:
+
+   ```bash
+   vendorvet assess vendor_questionnaire.json --sbom vendor_sbom.json --advisories advisories.json || echo "Vendor flagged high/critical risk"
+   ```
+
+
 ## Contents
 
 - [Why vendorvet?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
