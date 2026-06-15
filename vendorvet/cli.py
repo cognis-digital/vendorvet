@@ -62,8 +62,12 @@ def _s_table(r) -> List[str]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog=TOOL_NAME, description="SMB third-party risk vetting.")
-    p.add_argument("--version", action="version", version=f"{TOOL_NAME} {TOOL_VERSION}")
+    p = argparse.ArgumentParser(
+        prog=TOOL_NAME, description="SMB third-party risk vetting."
+    )
+    p.add_argument(
+        "--version", action="version", version=f"{TOOL_NAME} {TOOL_VERSION}"
+    )
     p.add_argument("--format", choices=["table", "json"], default="table")
     sub = p.add_subparsers(dest="command")
 

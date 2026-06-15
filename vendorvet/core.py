@@ -49,7 +49,9 @@ CONTROL_CATALOG: Dict[str, tuple] = {
     "data_retention_policy": ("Defined data retention/deletion policy", 5, True),
     "vuln_mgmt_program": ("Formal vulnerability management program", 6, True),
     "employee_security_training": ("Annual security awareness training", 4, True),
-    "shares_data_with_third_parties": ("Shares customer data with 3rd parties", 8, False),
+    "shares_data_with_third_parties": (
+        "Shares customer data with 3rd parties", 8, False
+    ),
     "prior_breach_24mo": ("Disclosed breach in last 24 months", 9, False),
 }
 
@@ -215,6 +217,10 @@ def crossref_sbom(sbom: Dict[str, Any], advisories: Dict[str, Any]) -> SbomResul
     A component matches if its exact version appears in an advisory's
     "versions" list for that package name.
     """
+    if not isinstance(sbom, dict):
+        raise ValueError("SBOM must be a JSON object")
+    if not isinstance(advisories, dict):
+        raise ValueError("advisories must be a JSON object")
     comps = sbom.get("components")
     if not isinstance(comps, list):
         raise ValueError("SBOM must contain a 'components' array")
@@ -222,26 +228,40 @@ def crossref_sbom(sbom: Dict[str, Any], advisories: Dict[str, Any]) -> SbomResul
     vulnerable: List[SbomComponent] = []
     max_cvss = 0.0
     for c in comps:
-        name = str(c.get("name", "")).strip()
-        version = str(c.get("version", "")).strip()
+        if not isinstance(c, dict):
+            continue
+        name = str(c.get("name") or "").strip()
+        version = str(c.get("version") or "").strip()
         if not name:
             continue
-        for adv in advisories.get(name, []):
+        adv_list = advisories.get(name, [])
+        if not isinstance(adv_list, list):
+            continue
+        for adv in adv_list:
+            if not isinstance(adv, dict):
+                continue
             affected_versions = {str(v) for v in adv.get("versions", [])}
             if version in affected_versions:
-                cvss = float(adv.get("cvss", 0.0))
+                try:
+                    cvss = float(adv.get("cvss", 0.0))
+                except (TypeError, ValueError):
+                    cvss = 0.0
+                cvss = max(0.0, min(10.0, cvss))
                 max_cvss = max(max_cvss, cvss)
                 vulnerable.append(
                     SbomComponent(
                         name=name, version=version,
-                        cve=str(adv.get("cve", "UNKNOWN")),
+                        cve=str(adv.get("cve") or "UNKNOWN"),
                         cvss=cvss, severity=_severity_for(cvss),
                     )
                 )
 
     vulnerable.sort(key=lambda x: x.cvss, reverse=True)
+    scanned = sum(
+        1 for c in comps if isinstance(c, dict) and c.get("name")
+    )
     return SbomResult(
-        components_scanned=len([c for c in comps if c.get("name")]),
+        components_scanned=scanned,
         vulnerable=vulnerable,
         max_cvss=round(max_cvss, 1),
         severity=_severity_for(max_cvss),
@@ -266,8 +286,14 @@ def assess_vendor(
 
     SBOM contributes a score boost based on the worst CVSS found
     (cvss 10 -> +100 contribution). Overall = max(questionnaire, sbom-derived).
+
+    At least one of questionnaire or sbom must be provided.
     """
-    q_result = assess_questionnaire(questionnaire) if questionnaire else None
+    if questionnaire is None and sbom is None:
+        raise ValueError("at least one of questionnaire or sbom must be provided")
+    q_result = (
+        assess_questionnaire(questionnaire) if questionnaire is not None else None
+    )
     s_result = None
     if sbom is not None:
         s_result = crossref_sbom(sbom, advisories or {})
@@ -307,5 +333,22 @@ def to_dict(obj: Any) -> Any:
 
 
 def load_json_file(path: str) -> Dict[str, Any]:
-    with open(path, "r", encoding="utf-8") as fh:
-        return json.load(fh)
+    """Load and parse a JSON file; raise clear errors on failure."""
+    if not path:
+        raise ValueError("file path must not be empty")
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except FileNotFoundError:
+        raise OSError(f"file not found: {path}")
+    except PermissionError:
+        raise OSError(f"permission denied reading: {path}")
+    except json.JSONDecodeError as exc:
+        raise json.JSONDecodeError(
+            f"invalid JSON in {path!r}: {exc.msg}", exc.doc, exc.pos
+        )
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"{path!r} must contain a JSON object (got {type(data).__name__})"
+        )
+    return data

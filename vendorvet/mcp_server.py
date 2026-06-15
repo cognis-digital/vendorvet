@@ -1,6 +1,10 @@
-"""VENDORVET MCP server — exposes scan() as an MCP tool for Cognis.Studio."""
+"""VENDORVET MCP server — exposes assess_vendor() as an MCP tool for Cognis.Studio."""
 from __future__ import annotations
-from vendorvet.core import scan, to_json
+
+import json
+
+from vendorvet.core import assess_vendor, to_dict
+
 
 def serve() -> int:
     """Start an MCP stdio server. Requires the optional 'mcp' extra:
@@ -8,15 +12,16 @@ def serve() -> int:
     """
     try:
         from mcp.server.fastmcp import FastMCP
-    except Exception:
+    except ImportError:
         print("Install the MCP extra: pip install 'cognis-vendorvet[mcp]'")
         return 1
     app = FastMCP("vendorvet")
 
     @app.tool()
-    def vendorvet_scan(target: str) -> str:
-        """Third-party / vendor risk questionnaires with SBOM cross-ref. Returns JSON findings."""
-        return to_json(scan(target))
+    def vendorvet_scan(questionnaire: dict) -> str:
+        """Score a vendor security questionnaire. Returns JSON findings."""
+        result = assess_vendor(questionnaire=questionnaire)
+        return json.dumps(to_dict(result), indent=2, sort_keys=True)
 
     app.run()
     return 0
