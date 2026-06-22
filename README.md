@@ -80,6 +80,7 @@ expected verdict). They all use real, documented CVEs.
 | [`09-ci-gate-sarif`](demos/09-ci-gate-sarif) | CI gate + SARIF upload (CVE-2021-45046) | CRITICAL (exit 2) |
 | [`10-data-broker-restricted`](demos/10-data-broker-restricted) | Data broker, prior breach, shares data | HIGH (exit 2) |
 | [`11-heartbleed-legacy`](demos/11-heartbleed-legacy) | Legacy appliance with Heartbleed OpenSSL | HIGH (exit 2) |
+| [`12-feeds-osv-kev`](demos/12-feeds-osv-kev) | SBOM enriched from **live OSV + CISA-KEV** (runs offline) | CRITICAL (exit 2) |
 
 ```bash
 # run any demo straight from a clone
@@ -87,6 +88,72 @@ python -m vendorvet assess demos/08-spring4shell/questionnaire.json \
     --sbom demos/08-spring4shell/sbom.json \
     --advisories demos/08-spring4shell/advisories.json
 ```
+
+
+## Live feed enrichment (OSV + CISA-KEV) — edge / air-gap ready
+
+The `sbom`/`assess` subcommands above cross-reference an SBOM against a
+*hand-supplied* advisory file. The `feeds` subcommand instead grounds the verdict
+in **real, current** vulnerability intelligence pulled from two authoritative,
+keyless sources, then re-serves them **offline** so the tool keeps working on
+disconnected / edge / air-gapped gear.
+
+| Feed id | Source | URL |
+|---|---|---|
+| `osv` | OSV.dev — package+version → known vulns across PyPI/npm/Maven/Go/crates.io/… | `https://api.osv.dev/v1/query` |
+| `cisa-kev` | CISA Known Exploited Vulnerabilities catalog (actively exploited in the wild) | `https://www.cisa.gov/known-exploited-vulnerabilities-catalog` |
+
+**Real enrichment:** every SBOM component is resolved against OSV for live
+advisories; each CVE is then checked against CISA-KEV. A KEV hit raises a
+`known_exploited` flag and escalates the verdict to **CRITICAL** regardless of
+CVSS — a vulnerability under active exploitation is the single strongest
+third-party-risk escalation signal.
+
+```bash
+vendorvet feeds list                       # the two feeds this tool consumes
+vendorvet feeds update osv cisa-kev        # fetch + cache (online)
+vendorvet feeds enrich vendor_sbom.json    # live OSV + KEV enrichment
+```
+
+```text
+$ vendorvet feeds enrich demos/12-feeds-osv-kev/sbom.json --offline
+Components scanned:    3
+Max CVSS:              10.0 (critical)
+Known-exploited (KEV): 2
+Verdict:               CRITICAL
+  org.apache.logging.log4j:log4j-core@2.14.1  CVE-2021-44228  CVSS 10.0 (critical)  [!! CISA-KEV: ACTIVELY EXPLOITED]
+      remediate by 2021-12-24; ransomware: Known
+  django@3.0  CVE-2020-9402  CVSS 7.5 (high)
+```
+
+Exit code is `2` when the verdict is high/critical (CI-gate friendly).
+
+### Offline / air-gap workflow
+
+`datafeeds` (bundled, stdlib-only) caches every fetch to disk and can re-serve it
+with **zero network**:
+
+```bash
+export COGNIS_FEEDS_CACHE=/secure/feeds-cache     # where the cache lives
+vendorvet feeds update osv cisa-kev               # on a connected host
+vendorvet feeds enrich sbom.json --offline        # serve from cache only
+```
+
+To move intelligence into a disconnected enclave, snapshot the cache and carry it
+across the air gap by sneakernet:
+
+```bash
+# connected host
+python -m vendorvet.datafeeds snapshot-export feeds.tar.gz
+# air-gapped host
+export COGNIS_FEEDS_CACHE=/secure/feeds-cache
+python -m vendorvet.datafeeds snapshot-import feeds.tar.gz
+vendorvet feeds enrich sbom.json --offline
+```
+
+The committed test suite runs **fully offline** against trimmed fixtures under
+[`tests/fixtures/feeds-cache/`](tests/fixtures/feeds-cache) — no test touches the
+network. *Defensive / authorized-use intelligence only.*
 
 
 ## Contents

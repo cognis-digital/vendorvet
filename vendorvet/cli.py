@@ -26,8 +26,10 @@ from .core import (
     to_dict,
 )
 from .sarif import to_sarif
+from . import datafeeds, feeds as feedmod
 
 _HIGH_RISK = {RiskTier.HIGH.value, RiskTier.CRITICAL.value}
+_FEED_HIGH = {"high", "critical"}
 
 
 def _emit(data: Any, fmt: str, table_lines: List[str],
@@ -82,7 +84,105 @@ def build_parser() -> argparse.ArgumentParser:
     pa.add_argument("questionnaire_file")
     pa.add_argument("--sbom")
     pa.add_argument("--advisories")
+
+    pf = sub.add_parser(
+        "feeds",
+        help="Real vuln feeds (OSV + CISA-KEV) for SBOM enrichment.",
+    )
+    fsub = pf.add_subparsers(dest="feeds_command")
+    fsub.add_parser("list", help="List the feeds this tool consumes.")
+    fu = fsub.add_parser("update", help="Fetch + cache the consumed feeds.")
+    fu.add_argument("ids", nargs="*", help="feed id(s); default: all consumed")
+    fg = fsub.add_parser("get", help="Print a cached/fetched feed.")
+    fg.add_argument("id")
+    fg.add_argument("--offline", action="store_true")
+    fe = fsub.add_parser(
+        "enrich",
+        help="Enrich an SBOM with live OSV vulns + CISA-KEV exploited flag.",
+    )
+    fe.add_argument("sbom_file")
+    fe.add_argument("--offline", action="store_true")
     return p
+
+
+def _fs_table(r) -> List[str]:
+    lines = [
+        f"Components scanned:    {r.components_scanned}",
+        f"Max CVSS:              {r.max_cvss} ({r.severity})",
+        f"Known-exploited (KEV): {r.known_exploited_count}",
+        f"Verdict:               {r.verdict.upper()}",
+    ]
+    for f in r.findings:
+        kev = "  [!! CISA-KEV: ACTIVELY EXPLOITED]" if f.known_exploited else ""
+        lines.append(
+            f"  {f.component}@{f.version}  {f.cve}  CVSS {f.cvss} ({f.severity}){kev}"
+        )
+        if f.known_exploited and f.kev_due_date:
+            ransom = (f.kev_ransomware or "Unknown")
+            lines.append(f"      remediate by {f.kev_due_date}; ransomware: {ransom}")
+    return lines
+
+
+def _feeds_command(args, fmt: str) -> int:
+    """Handle the `feeds` subcommand restricted to OSV + CISA-KEV."""
+    sub = getattr(args, "feeds_command", None)
+    if sub == "list":
+        cat = feedmod.relevant_catalog()
+        if fmt == "json":
+            print(json.dumps(cat, indent=2, sort_keys=True))
+        else:
+            print("Feeds consumed by vendorvet (defensive / authorized-use):")
+            for f in cat:
+                age = datafeeds.cached_age_hours(f["id"])
+                fresh = "uncached" if age is None else f"{age:.1f}h old"
+                print(f"  {f['id']:10} [{fresh:9}] {f['name']}")
+                print(f"             {f['url']}")
+        return 0
+
+    if sub == "update":
+        ids = args.ids or list(feedmod.RELEVANT_FEEDS)
+        rc = 0
+        for fid in ids:
+            if fid not in feedmod.RELEVANT_FEEDS:
+                print(f"error: {fid!r} is not a feed vendorvet consumes "
+                      f"({', '.join(feedmod.RELEVANT_FEEDS)})", file=sys.stderr)
+                rc = 1
+                continue
+            try:
+                pth = datafeeds.update(fid)
+                print(f"  updated {fid} -> {pth} ({pth.stat().st_size} bytes)")
+            except (KeyError, ConnectionError) as e:
+                print(f"  {fid}: {e}", file=sys.stderr)
+                rc = 1
+        return rc
+
+    if sub == "get":
+        if args.id not in feedmod.RELEVANT_FEEDS:
+            print(f"error: {args.id!r} is not a feed vendorvet consumes "
+                  f"({', '.join(feedmod.RELEVANT_FEEDS)})", file=sys.stderr)
+            return 1
+        try:
+            data = datafeeds.get(args.id, offline=args.offline)
+        except (KeyError, FileNotFoundError, ConnectionError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        print(json.dumps(data, indent=2)[:4000] if isinstance(data, (dict, list))
+              else str(data)[:4000])
+        return 0
+
+    if sub == "enrich":
+        sbom = load_json_file(args.sbom_file)
+        try:
+            r = feedmod.enrich_sbom(sbom, offline=args.offline)
+        except (FileNotFoundError, ConnectionError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        _emit(r, fmt, _fs_table(r))
+        return 2 if r.verdict in _FEED_HIGH else 0
+
+    print("error: feeds subcommand required (list|update|get|enrich)",
+          file=sys.stderr)
+    return 1
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -135,6 +235,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             ) if args.format == "sarif" else None
             _emit(r, args.format, table, sarif=sarif)
             return 2 if r.overall_tier.value in _HIGH_RISK else 0
+
+        if args.command == "feeds":
+            return _feeds_command(args, args.format)
 
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

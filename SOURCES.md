@@ -1,5 +1,18 @@
 # Sources
 
+## Vulnerability data feeds (consumed by `vendorvet feeds`)
+
+Authoritative, keyless feeds wired into the SBOM enrichment layer. Fetched over
+HTTPS, cached to disk, and re-served offline for edge / air-gap deployment.
+Defensive / authorized-use intelligence only.
+
+- **osv** — OSV.dev vulnerability query · `https://api.osv.dev/v1/query` ·
+  package+version → known vulns across PyPI/npm/Maven/Go/crates.io/…
+- **cisa-kev** — CISA Known Exploited Vulnerabilities catalog ·
+  `https://www.cisa.gov/known-exploited-vulnerabilities-catalog`
+  (JSON: `https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json`) ·
+  CVEs observed actively exploited in the wild.
+
 <!-- cognis-2026-live-sources -->
 
 ## Live 2026 sources (auto-expanded)
