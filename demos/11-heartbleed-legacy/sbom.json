@@ -1,0 +1,8 @@
+{
+  "vendor": "FieldGate Appliance",
+  "components": [
+    {"name": "openssl", "version": "1.0.1f"},
+    {"name": "nginx", "version": "1.24.0"},
+    {"name": "zlib", "version": "1.3.1"}
+  ]
+}

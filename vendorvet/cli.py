@@ -25,13 +25,17 @@ from .core import (
     load_json_file,
     to_dict,
 )
+from .sarif import to_sarif
 
 _HIGH_RISK = {RiskTier.HIGH.value, RiskTier.CRITICAL.value}
 
 
-def _emit(data: Any, fmt: str, table_lines: List[str]) -> None:
+def _emit(data: Any, fmt: str, table_lines: List[str],
+          sarif: Optional[Any] = None) -> None:
     if fmt == "json":
         print(json.dumps(to_dict(data), indent=2, sort_keys=True))
+    elif fmt == "sarif":
+        print(json.dumps(sarif if sarif is not None else {}, indent=2, sort_keys=True))
     else:
         print("\n".join(table_lines))
 
@@ -64,7 +68,7 @@ def _s_table(r) -> List[str]:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog=TOOL_NAME, description="SMB third-party risk vetting.")
     p.add_argument("--version", action="version", version=f"{TOOL_NAME} {TOOL_VERSION}")
-    p.add_argument("--format", choices=["table", "json"], default="table")
+    p.add_argument("--format", choices=["table", "json", "sarif"], default="table")
     sub = p.add_subparsers(dest="command")
 
     pq = sub.add_parser("questionnaire", help="Score a questionnaire JSON file.")
@@ -91,16 +95,20 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     try:
         if args.command == "questionnaire":
-            r = assess_questionnaire(load_json_file(args.file))
-            _emit(r, args.format, _q_table(r))
+            doc = load_json_file(args.file)
+            r = assess_questionnaire(doc)
+            sarif = to_sarif(assess_vendor(questionnaire=doc),
+                             questionnaire_uri=args.file) if args.format == "sarif" else None
+            _emit(r, args.format, _q_table(r), sarif=sarif)
             return 2 if r.tier.value in _HIGH_RISK else 0
 
         if args.command == "sbom":
-            r = crossref_sbom(
-                load_json_file(args.sbom_file),
-                load_json_file(args.advisories_file),
-            )
-            _emit(r, args.format, _s_table(r))
+            sbom_doc = load_json_file(args.sbom_file)
+            adv_doc = load_json_file(args.advisories_file)
+            r = crossref_sbom(sbom_doc, adv_doc)
+            sarif = to_sarif(assess_vendor(sbom=sbom_doc, advisories=adv_doc),
+                             sbom_uri=args.sbom_file) if args.format == "sarif" else None
+            _emit(r, args.format, _s_table(r), sarif=sarif)
             return 2 if r.severity in ("high", "critical") else 0
 
         if args.command == "assess":
@@ -120,7 +128,12 @@ def main(argv: Optional[List[str]] = None) -> int:
             if r.sbom:
                 table.append("-- sbom --")
                 table.extend(_s_table(r.sbom))
-            _emit(r, args.format, table)
+            sarif = to_sarif(
+                r,
+                questionnaire_uri=args.questionnaire_file,
+                sbom_uri=(args.sbom or "sbom.json"),
+            ) if args.format == "sarif" else None
+            _emit(r, args.format, table, sarif=sarif)
             return 2 if r.overall_tier.value in _HIGH_RISK else 0
 
     except (OSError, ValueError, json.JSONDecodeError) as exc:

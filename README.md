@@ -52,6 +52,42 @@ vendorvet scan .            # → prioritized findings in seconds
    vendorvet assess vendor_questionnaire.json --sbom vendor_sbom.json --advisories advisories.json || echo "Vendor flagged high/critical risk"
    ```
 
+6. **Export SARIF 2.1.0** for GitHub code scanning / any SARIF viewer. Add `--format sarif` to any subcommand:
+
+   ```bash
+   vendorvet --format sarif assess vendor_questionnaire.json \
+       --sbom vendor_sbom.json --advisories advisories.json > vendorvet.sarif
+   ```
+
+   Each questionnaire gap and vulnerable component becomes a SARIF result; CVEs carry a `security-severity` property so GitHub renders the right badge. See [`demos/09-ci-gate-sarif`](demos/09-ci-gate-sarif) for a full Actions workflow.
+
+## Worked examples (demos)
+
+Every folder under [`demos/`](demos) is a runnable, real-use-case scenario
+with a `SCENARIO.md` (where the data came from, the exact command, and the
+expected verdict). They all use real, documented CVEs.
+
+| Demo | Situation | Verdict |
+|---|---|---|
+| [`01-basic`](demos/01-basic) | SaaS with Log4Shell in its SBOM | CRITICAL (exit 2) |
+| [`02-clean`](demos/02-clean) | Fully-attested vendor, zero gaps | LOW (exit 0) |
+| [`03-mixed`](demos/03-mixed) | Mid-tier vendor, MFA/pentest gaps | MODERATE (exit 0) |
+| [`04-payroll-saas`](demos/04-payroll-saas) | Strong payroll vendor, restricted PII, missing breach SLA | MODERATE (exit 0) |
+| [`05-clean-vendor`](demos/05-clean-vendor) | Public-data vendor, patched SBOM | LOW (exit 0) |
+| [`06-supply-chain-struts`](demos/06-supply-chain-struts) | SBOM-only: Apache Struts RCE (CVE-2017-5638) | CRITICAL (exit 2) |
+| [`07-startup-unanswered`](demos/07-startup-unanswered) | Early-stage vendor leaves controls blank | HIGH (exit 2) |
+| [`08-spring4shell`](demos/08-spring4shell) | Clean questionnaire, Spring4Shell in code | CRITICAL (exit 2) |
+| [`09-ci-gate-sarif`](demos/09-ci-gate-sarif) | CI gate + SARIF upload (CVE-2021-45046) | CRITICAL (exit 2) |
+| [`10-data-broker-restricted`](demos/10-data-broker-restricted) | Data broker, prior breach, shares data | HIGH (exit 2) |
+| [`11-heartbleed-legacy`](demos/11-heartbleed-legacy) | Legacy appliance with Heartbleed OpenSSL | HIGH (exit 2) |
+
+```bash
+# run any demo straight from a clone
+python -m vendorvet assess demos/08-spring4shell/questionnaire.json \
+    --sbom demos/08-spring4shell/sbom.json \
+    --advisories demos/08-spring4shell/advisories.json
+```
+
 
 ## Contents
 
@@ -69,11 +105,12 @@ TPRM for SMBs
 <a name="features"></a>
 ## Features
 
-- ✅ Assess Questionnaire
-- ✅ Crossref Sbom
-- ✅ Assess Vendor
-- ✅ To Dict
-- ✅ Load Json File
+- ✅ Score security questionnaires (weighted controls, inherent-risk multiplier)
+- ✅ Cross-reference SBOMs against an advisory feed (exact-version matching)
+- ✅ Combined vendor verdict (questionnaire + SBOM) with recommendation
+- ✅ Output as **table · JSON · SARIF 2.1.0** (`--format`)
+- ✅ CI-friendly exit codes (0 / 2 / 1) for procurement gates
+- ✅ 11 runnable real-use-case demos in [`demos/`](demos)
 - ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
 - ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
 

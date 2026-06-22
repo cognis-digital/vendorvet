@@ -1,0 +1,10 @@
+{
+  "vendor": "Northwind Status Page",
+  "components": [
+    {"name": "express", "version": "4.19.2"},
+    {"name": "log4j-core", "version": "2.23.1"},
+    {"name": "openssl", "version": "3.0.13"},
+    {"name": "requests", "version": "2.31.0"},
+    {"name": "jackson-databind", "version": "2.17.0"}
+  ]
+}

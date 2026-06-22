@@ -1,9 +1,20 @@
-# Scenario: 02-clean
+# Demo 02 — Fully-attested vendor (zero gaps)
 
-A clean baseline that should yield zero findings.
+**Harbor CDN** answered every control satisfactorily for an `internal`-data
+engagement. There are no gaps and no adverse answers — the expected clean
+baseline.
 
-## Run
+## Files
+
+- `questionnaire.json` — all 14 controls answered and satisfied.
+
+## Run it
 
 ```bash
-<tool> scan .
+python -m vendorvet questionnaire demos/02-clean/questionnaire.json
 ```
+
+## Expected outcome
+
+Residual score **0.0/100 → LOW**, no gaps, exit code **0**. Recommendation:
+**approve, standard annual re-review**.

@@ -1,0 +1,9 @@
+{
+  "vendor": "Orchard Commerce API",
+  "components": [
+    {"name": "spring-beans", "version": "5.3.17"},
+    {"name": "spring-webmvc", "version": "5.3.17"},
+    {"name": "tomcat-embed-core", "version": "9.0.60"},
+    {"name": "jackson-databind", "version": "2.13.2"}
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "vendor": "Meridian Logging Cloud",
+  "components": [
+    {"name": "log4j-core", "version": "2.15.0"},
+    {"name": "netty", "version": "4.1.86"},
+    {"name": "openssl", "version": "3.0.13"}
+  ]
+}

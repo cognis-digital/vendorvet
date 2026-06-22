@@ -1,0 +1,9 @@
+{
+  "vendor": "SeedStage Labs",
+  "data_classification": "confidential",
+  "answers": {
+    "encryption_in_transit": true,
+    "mfa_enforced": true,
+    "incident_response_plan": false
+  }
+}

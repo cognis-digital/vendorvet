@@ -1,0 +1,20 @@
+{
+  "vendor": "Apex Data Enrichment",
+  "data_classification": "restricted",
+  "answers": {
+    "soc2_type2": false,
+    "iso27001": false,
+    "encryption_at_rest": true,
+    "encryption_in_transit": true,
+    "mfa_enforced": true,
+    "pentest_annual": false,
+    "incident_response_plan": true,
+    "breach_notification_sla": true,
+    "subprocessor_list": false,
+    "data_retention_policy": false,
+    "vuln_mgmt_program": true,
+    "employee_security_training": true,
+    "shares_data_with_third_parties": true,
+    "prior_breach_24mo": true
+  }
+}

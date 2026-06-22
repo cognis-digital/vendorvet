@@ -1,0 +1,20 @@
+{
+  "vendor": "Harbor CDN",
+  "data_classification": "internal",
+  "answers": {
+    "soc2_type2": true,
+    "iso27001": true,
+    "encryption_at_rest": true,
+    "encryption_in_transit": true,
+    "mfa_enforced": true,
+    "pentest_annual": true,
+    "incident_response_plan": true,
+    "breach_notification_sla": true,
+    "subprocessor_list": true,
+    "data_retention_policy": true,
+    "vuln_mgmt_program": true,
+    "employee_security_training": true,
+    "shares_data_with_third_parties": false,
+    "prior_breach_24mo": false
+  }
+}
