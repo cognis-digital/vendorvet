@@ -26,7 +26,7 @@ from .core import (
     to_dict,
 )
 from .sarif import to_sarif
-from . import datafeeds, feeds as feedmod
+from . import datafeeds, feeds as feedmod, vulnscan
 
 _HIGH_RISK = {RiskTier.HIGH.value, RiskTier.CRITICAL.value}
 _FEED_HIGH = {"high", "critical"}
@@ -102,6 +102,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     fe.add_argument("sbom_file")
     fe.add_argument("--offline", action="store_true")
+
+    # vulndb: 100% offline lookups against the bundled 262k-record OSV corpus.
+    pv = sub.add_parser(
+        "vulndb",
+        help="Bundled 262k-vuln DB lookups (fully offline, no network/cache).",
+    )
+    vsub = pv.add_subparsers(dest="vulndb_command")
+    vsub.add_parser("stats", help="Summarize the bundled vuln database.")
+    vc = vsub.add_parser("cve", help="Look up a CVE/GHSA id in the bundle.")
+    vc.add_argument("id")
+    vp = vsub.add_parser("package", help="List bundled vulns affecting a package.")
+    vp.add_argument("name")
+    vp.add_argument("--ecosystem")
+    vm = vsub.add_parser(
+        "match", help="Match an SBOM against the bundled DB (offline)."
+    )
+    vm.add_argument("sbom_file")
     return p
 
 
@@ -185,6 +202,78 @@ def _feeds_command(args, fmt: str) -> int:
     return 1
 
 
+def _vm_table(r) -> List[str]:
+    lines = [
+        f"Components scanned: {r.components_scanned}",
+        f"Matched vulns:      {len(r.findings)}",
+        f"Max CVSS:           {r.max_cvss} ({r.severity})",
+        f"Verdict:            {r.verdict.upper()}",
+        "(source: bundled cognis_vulndb.jsonl.gz - fully offline)",
+    ]
+    for f in r.findings[:50]:
+        eco = f"[{f.ecosystem}] " if f.ecosystem else ""
+        lines.append(
+            f"  {eco}{f.component}@{f.version or '*'}  {f.cve}  "
+            f"CVSS {f.cvss} ({f.severity})"
+        )
+    return lines
+
+
+def _vulndb_command(args, fmt: str) -> int:
+    """Handle the offline `vulndb` subcommand over the bundled corpus."""
+    sub = getattr(args, "vulndb_command", None)
+    if sub == "stats":
+        s = vulnscan.stats()
+        if fmt == "json":
+            print(json.dumps(s, indent=2, sort_keys=True))
+        else:
+            print(f"Bundled vulnerability database (offline):")
+            print(f"  records:          {s['records']}")
+            print(f"  with CVE alias:   {s['with_cve_alias']}")
+            print(f"  with severity:    {s['with_severity']}")
+            print(f"  ecosystems:")
+            for eco, n in s["ecosystems"].items():
+                print(f"    {eco:14} {n}")
+        return 0
+
+    if sub == "cve":
+        recs = vulnscan.lookup_cve(args.id)
+        if fmt == "json":
+            print(json.dumps(recs, indent=2, sort_keys=True))
+        else:
+            if not recs:
+                print(f"no bundled record for {args.id}")
+            for r in recs:
+                aliases = ", ".join(r.get("aliases", []))
+                print(f"  {r.get('id')}  [{r.get('ecosystem')}]  ({aliases})")
+                print(f"    {(r.get('summary') or '')[:200]}")
+                pkgs = ", ".join((r.get('packages') or [])[:6])
+                print(f"    packages: {pkgs}")
+        return 0 if recs else 1
+
+    if sub == "package":
+        recs = vulnscan.lookup_package(args.name, args.ecosystem)
+        if fmt == "json":
+            print(json.dumps(recs, indent=2, sort_keys=True))
+        else:
+            print(f"{len(recs)} bundled vuln(s) affecting {args.name}"
+                  + (f" ({args.ecosystem})" if args.ecosystem else ""))
+            for r in recs[:50]:
+                aliases = ", ".join(r.get("aliases", []))
+                print(f"  {r.get('id')}  [{r.get('ecosystem')}]  {aliases}")
+        return 0
+
+    if sub == "match":
+        sbom = load_json_file(args.sbom_file)
+        r = vulnscan.match_sbom(sbom)
+        _emit(r, fmt, _vm_table(r))
+        return 2 if r.verdict in _FEED_HIGH else 0
+
+    print("error: vulndb subcommand required (stats|cve|package|match)",
+          file=sys.stderr)
+    return 1
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -238,6 +327,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         if args.command == "feeds":
             return _feeds_command(args, args.format)
+
+        if args.command == "vulndb":
+            return _vulndb_command(args, args.format)
 
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

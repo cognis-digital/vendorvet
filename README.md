@@ -17,7 +17,8 @@
 
 ```bash
 pip install cognis-vendorvet
-vendorvet scan .            # → prioritized findings in seconds
+vendorvet questionnaire vendor.json     # → residual risk score + tier in ms
+vendorvet vulndb match sbom.json        # → SBOM vs 262k bundled vulns, offline
 ```
 
 ## Usage — step by step
@@ -81,6 +82,7 @@ expected verdict). They all use real, documented CVEs.
 | [`10-data-broker-restricted`](demos/10-data-broker-restricted) | Data broker, prior breach, shares data | HIGH (exit 2) |
 | [`11-heartbleed-legacy`](demos/11-heartbleed-legacy) | Legacy appliance with Heartbleed OpenSSL | HIGH (exit 2) |
 | [`12-feeds-osv-kev`](demos/12-feeds-osv-kev) | SBOM enriched from **live OSV + CISA-KEV** (runs offline) | CRITICAL (exit 2) |
+| [`13-vulndb-offline`](demos/13-vulndb-offline) | SBOM matched against the **bundled 262k-vuln DB**, air-gapped (Struts CVE-2017-5638) | CRITICAL (exit 2) |
 
 ```bash
 # run any demo straight from a clone
@@ -174,12 +176,14 @@ TPRM for SMBs
 
 - ✅ Score security questionnaires (weighted controls, inherent-risk multiplier)
 - ✅ Cross-reference SBOMs against an advisory feed (exact-version matching)
+- ✅ **Offline match against a bundled 262k-record real OSV/GHSA vuln DB** (`vulndb`) — zero network, air-gap ready
+- ✅ Live enrichment from **OSV + CISA-KEV** with cache + `--offline` (`feeds`)
 - ✅ Combined vendor verdict (questionnaire + SBOM) with recommendation
 - ✅ Output as **table · JSON · SARIF 2.1.0** (`--format`)
 - ✅ CI-friendly exit codes (0 / 2 / 1) for procurement gates
-- ✅ 11 runnable real-use-case demos in [`demos/`](demos)
+- ✅ 12 runnable real-use-case demos in [`demos/`](demos)
 - ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
-- ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
+- ✅ Ports in Python, JavaScript, Go, Rust, and Shell (`ports/`), CI-verified for parity
 
 <div align="right"><a href="#top">↑ back to top</a></div>
 
@@ -189,10 +193,15 @@ TPRM for SMBs
 ```bash
 pip install cognis-vendorvet
 vendorvet --version
-vendorvet scan .                       # scan current project
-vendorvet scan . --format json         # machine-readable
-vendorvet scan . --fail-on high        # CI gate (non-zero exit)
+vendorvet questionnaire vendor.json                 # score a questionnaire
+vendorvet --format json questionnaire vendor.json   # machine-readable
+vendorvet assess vendor.json --sbom sbom.json --advisories adv.json  # combined verdict
+vendorvet vulndb match sbom.json                    # offline 262k-vuln DB match
+vendorvet feeds enrich sbom.json                    # live OSV + CISA-KEV enrichment
 ```
+
+Exit code is `0` for low/moderate, `2` for high/critical, `1` on usage/IO error —
+so any subcommand doubles as a CI gate.
 
 <div align="right"><a href="#top">↑ back to top</a></div>
 
@@ -200,11 +209,28 @@ vendorvet scan . --fail-on high        # CI gate (non-zero exit)
 ## Example
 
 ```text
-$ vendorvet scan .
-  [HIGH    ] VEN-001  example finding             (./src/app.py)
-  [MEDIUM  ] VEN-002  another signal              (./config.yaml)
+$ vendorvet questionnaire demos/07-startup-unanswered/questionnaire.json
+Vendor:           Seedling Analytics
+Data class:       confidential (x1.1)
+Controls answered:3/14
+Residual score:   48.83/100
+Risk tier:        HIGH
+Gaps:
+  - SOC 2 Type II report on file (unanswered)
+  - Independent pen test within 12 months (unanswered)
+  - ...
+```
 
-  2 findings · risk score 5 · 38ms
+```text
+$ vendorvet vulndb match demos/12-feeds-osv-kev/sbom.json
+Components scanned: 3
+Matched vulns:      186
+Max CVSS:           10.0 (critical)
+Verdict:            CRITICAL
+(source: bundled cognis_vulndb.jsonl.gz - fully offline)
+  [Maven] org.apache.logging.log4j:log4j-core@2.14.1  CVE-2021-44228  CVSS 10.0 (critical)
+  [PyPI] django@3.0  CVE-2022-28346  CVSS 9.8 (critical)
+  ...
 ```
 
 <div align="right"><a href="#top">↑ back to top</a></div>
@@ -214,8 +240,11 @@ $ vendorvet scan .
 
 ```mermaid
 flowchart LR
-  IN[target / manifest] --> P[vendorvet<br/>checks + rules]
-  P --> OUT[findings (JSON / SARIF)]
+  Q[questionnaire.json] --> E[vendorvet<br/>risk engine]
+  S[SBOM.json] --> E
+  DB[(bundled 262k<br/>vuln DB)] --> E
+  F[OSV + CISA-KEV<br/>feeds, cache/offline] --> E
+  E --> OUT[verdict + findings<br/>table / JSON / SARIF]
 ```
 
 <div align="right"><a href="#top">↑ back to top</a></div>
@@ -226,7 +255,7 @@ flowchart LR
 `vendorvet` is interoperable with every popular way of using AI:
 
 - **MCP server** — `vendorvet mcp` (Claude Desktop, Cursor, Cognis.Studio, [uncensored-fleet](https://github.com/cognis-digital/uncensored-fleet))
-- **OpenAI-compatible / JSON** — pipe `vendorvet scan . --format json` into any agent or LLM
+- **OpenAI-compatible / JSON** — pipe `vendorvet --format json assess vendor.json` into any agent or LLM
 - **LangChain · CrewAI · AutoGen · LlamaIndex** — wrap the CLI/JSON as a tool in one line
 - **CI / scripts** — exit codes + SARIF for non-AI pipelines
 
@@ -297,7 +326,7 @@ PRs, new rules, and demo scenarios are welcome under the collaboration-pull mode
 
 ## Interoperability
 
-`{}` composes with the 300+ tool Cognis suite — JSON in/out and a shared
+`vendorvet` composes with the 300+ tool Cognis suite — JSON in/out and a shared
 OpenAI-compatible `/v1` backbone. See **[INTEROP.md](INTEROP.md)** for the
 suite map, composition patterns, and reference stacks.
 
@@ -309,6 +338,53 @@ Source-available under the **Cognis Open Collaboration License (COCL) v1.0** —
 
 <div align="center"><sub><b><a href="https://cognis.digital">Cognis Digital</a></b> · one of 170+ tools in the <a href="https://github.com/cognis-digital/cognis-neural-suite">Cognis Neural Suite</a> · <i>Making Tomorrow Better Today</i></sub></div>
 
-## Bundled vulnerability database
+## Bundled vulnerability database — 262k real vulns, fully offline
 
-Ships `vendorvet/cognis_vulndb.jsonl.gz` — **262,351 real vulnerabilities** (OSV: PyPI/npm/Go/Maven/RubyGems/crates.io/NuGet) with detailed metadata (CVE/GHSA aliases, ecosystem, severity/CVSS, affected packages, dates). Pure-stdlib offline loader `vulndb_local.VulnDB` (`count`/`by_cve`/`by_package`/`search`), air-gap ready. Refresh/extend via `datafeeds.py bulk`.
+Where the `feeds` subcommand pulls *live* OSV + CISA-KEV (cache-backed), the
+`vulndb` subcommand resolves an SBOM against a **bundled** corpus that ships
+inside the wheel: `vendorvet/cognis_vulndb.jsonl.gz` — **262,351 real
+vulnerabilities** consolidated from OSV across **npm · PyPI · Go · Maven ·
+crates.io · RubyGems · NuGet**, each with CVE/GHSA aliases, ecosystem, CVSS
+severity vector, affected packages, and publish/modify dates. No network, no
+cache priming, no key — grounded results the moment you clone. This is the true
+**air-gap / clean-room** path.
+
+```bash
+vendorvet vulndb stats                         # summarize the bundle
+vendorvet vulndb cve CVE-2021-44228            # look up a CVE / GHSA id
+vendorvet vulndb package django --ecosystem PyPI
+vendorvet vulndb match sbom.json               # match an SBOM, offline
+```
+
+```text
+$ vendorvet vulndb stats
+Bundled vulnerability database (offline):
+  records:          262351
+  with CVE alias:   30124
+  with severity:    25639
+  ecosystems:
+    npm            221314
+    PyPI           20698
+    Go             7271
+    Maven          6692
+    crates.io      2546
+    RubyGems       2066
+    NuGet          1764
+```
+
+The pure-stdlib loader `vendorvet.vulndb_local.VulnDB`
+(`count`/`by_cve`/`by_package`/`search`) is importable directly. Refresh or
+extend the corpus from NVD/OSV/GHSA with the bundled `datafeeds` module — see
+the offline / air-gap workflow above.
+
+## Scope, authorization & safety
+
+`vendorvet` is a **passive, offline** third-party-risk tool. It reads
+questionnaires, SBOMs, and bundled/cached vulnerability data and produces a
+verdict. **It performs no active scanning, network probing, or exploitation** —
+the `feeds` subcommand only *fetches published advisory feeds* (OSV/CISA-KEV)
+over HTTPS and caches them; `vulndb`, `questionnaire`, `sbom`, and `assess` make
+**no network calls at all**. Use it for defensive, authorized third-party risk
+management. All bundled vulnerability data is real (OSV/GHSA/CISA-KEV); nothing
+is fabricated. The committed test suite runs fully offline and never touches the
+network.

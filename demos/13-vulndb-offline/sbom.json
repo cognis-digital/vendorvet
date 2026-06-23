@@ -1,0 +1,9 @@
+{
+  "vendor": "Atlas Legacy Appliance",
+  "components": [
+    {"name": "org.apache.struts:struts2-core", "version": "2.3.31", "ecosystem": "Maven"},
+    {"name": "org.springframework:spring-beans", "version": "5.3.17", "ecosystem": "Maven"},
+    {"name": "lodash", "version": "4.17.11", "ecosystem": "npm"},
+    {"name": "requests", "version": "2.31.0", "ecosystem": "PyPI"}
+  ]
+}
