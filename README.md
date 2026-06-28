@@ -21,6 +21,66 @@ vendorvet questionnaire vendor.json     # → residual risk score + tier in ms
 vendorvet vulndb match sbom.json        # → SBOM vs 262k bundled vulns, offline
 ```
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+Real, reproducible output from the tool — runs offline:
+
+```console
+$ vendorvet-emit --version
+vendorvet 0.1.0
+```
+
+```console
+$ vendorvet-emit --help
+usage: vendorvet [-h] [--version] [--format {table,json,sarif}]
+                 {questionnaire,sbom,assess,feeds,vulndb} ...
+
+SMB third-party risk vetting.
+
+positional arguments:
+  {questionnaire,sbom,assess,feeds,vulndb}
+    questionnaire       Score a questionnaire JSON file.
+    sbom                Cross-reference SBOM vs advisories.
+    assess              Combined questionnaire + SBOM verdict.
+    feeds               Real vuln feeds (OSV + CISA-KEV) for SBOM enrichment.
+    vulndb              Bundled 262k-vuln DB lookups (fully offline, no
+                        network/cache).
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --format {table,json,sarif}
+```
+
+> Blocks above are real `vendorvet` output — reproduce them from a clone.
+
+**Sample result format** _(illustrative values — run on your own data for real findings):_
+
+```
+{
+"vendorvet": {
+"findings": [
+{
+"id": "123456",
+"name": "Suspicious Network Traffic",
+"description": "Potential malicious activity detected on network interface 192.168.1.100",
+"severity": "high"
+},
+{
+"id": "789012",
+"name": "Unusual File Access",
+"description": "User 'johndoe' accessed file '/path/to/sensitive/data'",
+"severity": "medium"
+}
+]
+}
+}
+```
+
+<!-- cognis:example:end -->
+
 ## Usage — step by step
 
 1. **Install** (Python 3.9+):

@@ -1,0 +1,3 @@
+$ vendorvet-emit --version
+
+vendorvet 0.1.0
