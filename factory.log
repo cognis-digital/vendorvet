@@ -1,0 +1,20 @@
+[2026-07-16 06:11:40] === enhance · vendorvet · words=120000 loc>=10000 langs=9 push=True ===
+[2026-07-16 06:11:45] phase DOCS — longform 120000-word corpus -> docs/corpus/
+[2026-07-16 19:02:56] phase POLYGLOT — expanding to >= 10000 LOC across 9 languages
+[2026-07-16 19:03:27]   facets: ['questionnaire_builder', 'vendor_registry', 'sbom_parser', 'component_matcher', 'risk_calculator', 'compliance_reporter']
+[2026-07-16 19:05:24]   +polyglot/python/questionnaire_builder.py  (loc now ~4045)
+[2026-07-16 19:07:19]   +polyglot/go/questionnaire_builder.go  (loc now ~4534)
+[2026-07-16 19:09:30]   +polyglot/rust/questionnaire_builder.rs  (loc now ~5049)
+[2026-07-16 19:11:25]   +polyglot/typescript/questionnaire_builder.ts  (loc now ~5559)
+[2026-07-16 19:11:57]   +polyglot/c/questionnaire_builder.c  (loc now ~5574)
+[2026-07-16 19:13:53]   +polyglot/cpp/questionnaire_builder.cpp  (loc now ~6048)
+[2026-07-16 19:15:49]   +polyglot/java/questionnaire_builder.java  (loc now ~6547)
+[2026-07-16 19:16:52]   +polyglot/ruby/questionnaire_builder.rb  (loc now ~6771)
+[2026-07-16 19:19:09]   +polyglot/csharp/questionnaire_builder.cs  (loc now ~7203)
+[2026-07-16 19:21:04]   +polyglot/python/vendor_registry.py  (loc now ~7675)
+[2026-07-16 19:23:03]   +polyglot/go/vendor_registry.go  (loc now ~8067)
+[2026-07-16 19:24:59]   +polyglot/rust/vendor_registry.rs  (loc now ~8470)
+[2026-07-16 19:26:38]   +polyglot/typescript/vendor_registry.ts  (loc now ~8887)
+[2026-07-16 19:28:23]   +polyglot/c/vendor_registry.c  (loc now ~9179)
+[2026-07-16 19:30:19]   +polyglot/cpp/vendor_registry.cpp  (loc now ~9602)
+[2026-07-16 19:32:29]   +polyglot/ruby/vendor_registry.rb  (loc now ~10187)
