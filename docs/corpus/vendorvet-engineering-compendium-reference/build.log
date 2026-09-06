@@ -102,3 +102,96 @@
 [2026-07-16 19:02:52]   [14] Future Directions: AI, Blockchain, and the Evoluti — 6551w
 [2026-07-16 19:02:56] ASSEMBLED -> C:\Users\user\cognis-enhance\vendorvet\docs\corpus\vendorvet-engineering-compendium-reference\vendorvet-engineering-compendium-reference.md (55,433 words, 14 sections)
 [2026-07-16 19:02:56] === complete · 55,433 words -> C:\Users\user\cognis-enhance\vendorvet\docs\corpus\vendorvet-engineering-compendium-reference\vendorvet-engineering-compendium-reference.md ===
+[2026-09-06 01:58:58] === longform corpus · "vendorvet — Engineering Compendium & Reference" · target ~120,000w · 14 sections × 6 subs × ~1450w · slot=uncensored · web=off ===
+[2026-09-06 01:59:03] hw: free~0.6GB target~9.5GB evicted=[]
+[2026-09-06 02:00:18] outline: 14 sections
+[2026-09-06 02:00:18]   [01] Foundations of Vendor Risk Management — exists, skip
+[2026-09-06 02:00:20]   pacing 8s (hot: VRAM 96.1%)
+[2026-09-06 02:10:10]     · SBOM as a Foundational Artifact in Software Su (1014w)
+[2026-09-06 02:18:25]     · SBOM Integration with Vendor Risk Questionnair (922w)
+[2026-09-06 02:25:49]     · SBOM Parsing and Analysis: Tools, Techniques,  (840w)
+[2026-09-06 02:34:30]     · SBOMs in Dependency Management: From Inventory (1036w)
+[2026-09-06 02:52:27]     · Legal and Regulatory Implications of SBOM Usag (899w)
+[2026-09-06 03:12:28]     · SBOM Evolution: Standards, Fragmentation, and  (1117w)
+[2026-09-06 03:12:28]   [02] The Role of SBOM in Modern Software Supply Chains — 5899w
+[2026-09-06 03:12:31]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 03:12:39]   [03] Designing Effective Third-Party Risk Questionnaire — exists, skip
+[2026-09-06 03:12:41]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 03:12:49]   [04] Mapping SBOM Components to Risk Questionnaire Item — exists, skip
+[2026-09-06 03:12:52]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 03:13:00]   [05] Vendor Risk Assessment Frameworks and Standards — exists, skip
+[2026-09-06 03:13:02]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 03:22:28]     · Defining Risk Parameters: Scope, Exposure, and (1066w)
+[2026-09-06 03:31:20]     · Quantitative Risk Assessment: Probability and  (1063w)
+[2026-09-06 04:09:18]     · SBOM Integration: Mapping Vulnerabilities to R (976w)
+[2026-09-06 04:17:13]     · Vendor Risk Scoring Models: Frameworks and Imp (1061w)
+[2026-09-06 04:23:32]     · Scenario-Based Risk Analysis: Stress Testing a (841w)
+[2026-09-06 04:31:41]     · Continuous Risk Monitoring: Dynamic Metrics an (1078w)
+[2026-09-06 04:31:41]   [06] Quantifying Risk: Metrics and Models for Vendor Ev — 6145w
+[2026-09-06 04:31:51]   pacing 5s (hot: VRAM 81.9%)
+[2026-09-06 04:40:29]     · SBOM Versioning and Semantic Consistency (978w)
+[2026-09-06 04:48:59]     · Data Provenance in SBOMs (1098w)
+[2026-09-06 04:58:25]     · Schema Evolution and Backward Compatibility (1200w)
+[2026-09-06 05:05:43]     · Dependency Resolution and Conflict Detection (865w)
+[2026-09-06 05:15:38]     · SBOM Integrity Verification Mechanisms (1176w)
+[2026-09-06 05:25:15]     · Impact of SBOM Inaccuracy on Risk Scoring Mode (1092w)
+[2026-09-06 05:25:15]   [07] SBOM Data Integrity and Its Implications for Risk  — 6457w
+[2026-09-06 05:25:26]   pacing 8s (hot: VRAM 95.4%)
+[2026-09-06 06:06:25]     · SBOM Generation and Parsing Frameworks (10w)
+[2026-09-06 06:24:59]     · Vendor-Specific SBOM Mapping Techniques (1045w)
+[2026-09-06 06:33:10]     · Automated Dependency Graph Construction (990w)
+[2026-09-06 06:41:44]     · Risk Scoring Algorithms and Models (1073w)
+[2026-09-06 06:49:04]     · Integration with CI/CD Pipelines (909w)
+[2026-09-06 06:57:39]     · Real-Time SBOM Monitoring and Alerts (983w)
+[2026-09-06 06:57:39]   [08] Automated Tools for SBOM Integration and Risk Scor — 5053w
+[2026-09-06 06:57:47]   pacing 8s (hot: VRAM 95.4%)
+[2026-09-06 07:07:05]     · The Equifax Data Breach: Inadequate Third-Part (871w)
+[2026-09-06 07:26:02]     · SolarWinds Supply Chain Compromise: SBOM Gaps  (989w)
+[2026-09-06 07:34:51]     · Target Corporation's 2013 Breach: Weak Vendor  (890w)
+[2026-09-06 07:41:13]     · The Capital One Data Incident: Misconfigured C (788w)
+[2026-09-06 07:49:50]     · The 2020 Microsoft Exchange Server Vulnerabili (862w)
+[2026-09-06 07:55:47]     · The Uber Data Leak: Poorly Managed Vendor Acce (812w)
+[2026-09-06 07:55:47]   [09] Case Studies in Vendor Risk Management Failures — 5288w
+[2026-09-06 07:55:49]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 08:02:39]     · SBOM Integration in Incident Detection and Ale (941w)
+[2026-09-06 08:07:40]     · SBOM-Enabled Root Cause Analysis and Vulnerabi (1054w)
+[2026-09-06 08:12:53]     · SBOM-Based Contingency Planning for Supply Cha (1039w)
+[2026-09-06 08:17:28]     · SBOM-Driven Recovery Strategies and System Res (951w)
+[2026-09-06 08:23:38]     · SBOM Cross-Referencing with Vendor SLAs and Se (1148w)
+[2026-09-06 08:29:04]     · SBOM Utilization in Post-Incident Review and C (1007w)
+[2026-09-06 08:29:04]   [10] SBOM-Driven Incident Response and Contingency Plan — 6197w
+[2026-09-06 08:29:06]   pacing 8s (hot: VRAM 96.4%)
+[2026-09-06 08:35:52]     · SBOM Integration in Vendor Risk Assessment Fra (1049w)
+[2026-09-06 08:42:34]     · Dynamic SBOM Monitoring and Real-Time Vulnerab (921w)
+[2026-09-06 08:47:10]     · Automated SBOM Analysis for Dependency Chain T (904w)
+[2026-09-06 08:52:53]     · Vendor-Specific SBOM Compliance and Validation (1155w)
+[2026-09-06 08:57:41]     · SBOM-Driven Incident Response and Escalation M (977w)
+[2026-09-06 09:04:44]     · Cross-Organizational SBOM Collaboration and Da (1135w)
+[2026-09-06 09:04:44]   [11] Vendor Risk Mitigation Strategies and SBOM Support — 6196w
+[2026-09-06 09:04:47]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 09:13:58]     · SBOM Integration with Real-Time Vulnerability  (1070w)
+[2026-09-06 09:19:36]     · Automated SBOM Parsing and Dependency Mapping (1084w)
+[2026-09-06 09:24:18]     · Risk Scoring Models for SBOM-Driven Audits (984w)
+[2026-09-06 09:31:51]     · Continuous Compliance Monitoring via SBOM Upda (1172w)
+[2026-09-06 09:40:58]     · SBOM-Based Incident Response and Root Cause An (1065w)
+[2026-09-06 09:49:43]     · Vendor-Specific SBOM Audit Workflows and Autom (1035w)
+[2026-09-06 09:49:43]   [12] Continuous Monitoring and SBOM-Based Risk Auditing — 6461w
+[2026-09-06 09:49:51]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 09:58:40]     · Zero-Day Vulnerabilities and SBOM Integration (1037w)
+[2026-09-06 10:07:32]     · Supply Chain Compromise and SBOM Traceability (1095w)
+[2026-09-06 10:14:20]     · Open-Source Software Risks and SBOM Coverage (857w)
+[2026-09-06 10:21:23]     · AI-Driven Threats and SBOM Adaptation (876w)
+[2026-09-06 10:30:46]     · Regulatory Evolution and SBOM Standardization (1109w)
+[2026-09-06 10:37:38]     · SBOM Fragmentation and Interoperability Challe (839w)
+[2026-09-06 10:37:38]   [13] Emerging Threats and SBOM Evolution in Vendor Risk — 5861w
+[2026-09-06 10:37:45]   pacing 8s (hot: VRAM 96.2%)
+[2026-09-06 10:54:48]     · AI-Driven Risk Prediction Models in Vendor Man (833w)
+[2026-09-06 11:03:20]     · Blockchain-Based Immutable Audit Trails for Ve (1107w)
+[2026-09-06 11:30:20]     · SBOM Integration with Automated Vulnerability  (827w)
+[2026-09-06 12:00:05]     · Real-Time Threat Intelligence Feeds and SBOM C (1035w)
+[2026-09-06 12:08:36]     · Decentralized Identity Verification for Third- (977w)
+[2026-09-06 12:16:40]     · Quantum-Resilient SBOM Protocols for Future-Pr (855w)
+[2026-09-06 12:16:40]   [14] The Future of Vendor Risk: AI, Blockchain, and SBO — 5694w
+[2026-09-06 12:16:42]   pacing 8s (hot: VRAM 96.1%)
+[2026-09-06 12:16:51] ASSEMBLED -> C:\Users\user\cognis-enhance\vendorvet\docs\corpus\vendorvet-engineering-compendium-reference\vendorvet-engineering-compendium-reference.md (114,684 words, 24 sections)
+[2026-09-06 12:16:51] === complete · 114,684 words -> C:\Users\user\cognis-enhance\vendorvet\docs\corpus\vendorvet-engineering-compendium-reference\vendorvet-engineering-compendium-reference.md ===

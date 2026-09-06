@@ -18,3 +18,8 @@
 [2026-07-16 19:28:23]   +polyglot/c/vendor_registry.c  (loc now ~9179)
 [2026-07-16 19:30:19]   +polyglot/cpp/vendor_registry.cpp  (loc now ~9602)
 [2026-07-16 19:32:29]   +polyglot/ruby/vendor_registry.rb  (loc now ~10187)
+[2026-07-16 19:32:33] === done · vendorvet · loc=10187 · {'committed': True, 'pushed': True, 'push_err': ''} ===
+[2026-09-06 01:58:53] === enhance · vendorvet · words=120000 loc>=10000 langs=9 push=True ===
+[2026-09-06 01:58:58] phase DOCS — longform 120000-word corpus -> docs/corpus/
+[2026-09-06 12:16:51] phase POLYGLOT — expanding to >= 10000 LOC across 9 languages
+[2026-09-06 12:19:22]   facets: ['questionnaire_templates', 'vendor_profiles', 'sbom_parser', 'sbom_cross_ref', 'risk_scoring', 'report_generator']
